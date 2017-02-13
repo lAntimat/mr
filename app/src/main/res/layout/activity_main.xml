@@ -1,0 +1,86 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+
+    <FrameLayout
+            android:id="@+id/content_frame"
+            android:layout_width="match_parent"
+        android:touchscreenBlocksFocus="false"
+        android:background="@android:color/white"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/player_mini">
+        </FrameLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:id="@+id/player_mini"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|bottom"
+        android:baselineAligned="false"
+        android:layout_above="@+id/bottomBar"
+        android:onClick="playerMiniClick"
+        android:background="@xml/player_mini_shadow">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.8">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:id="@+id/tvTitle"
+                android:textSize="15dp"
+                android:textStyle="bold"
+                android:textColor="@color/primary_text"
+                android:paddingLeft="5dp"
+                android:paddingTop="3dp"
+                android:layout_marginLeft="5dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:id="@+id/tvName"
+                android:textSize="12dp"
+                android:textColor="@color/secondary_text"
+                android:paddingLeft="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="2dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:layout_gravity="right">
+
+
+
+            <Button
+                style="@style/Base.Widget.AppCompat.ActionButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:id="@+id/btnPlayMini" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <com.roughike.bottombar.BottomBar
+        android:id="@+id/bottomBar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_alignParentBottom="true"
+        app:bb_tabXmlResource="@xml/bottombar_tabs"
+        android:measureWithLargestChild="false"
+        android:orientation="horizontal" />
+
+</RelativeLayout>

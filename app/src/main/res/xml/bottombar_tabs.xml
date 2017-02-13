@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<tabs>
+    <tab
+    id="@+id/tab_radio"
+    icon="@drawable/ic_access_point_padding_24"
+    title="Радио" />
+    <tab
+    id="@+id/tab_podcast"
+    icon="@drawable/ic_music_circle_black_padding_24"
+    title="Подкасты" />
+    <tab
+    id="@+id/tab_more"
+    icon="@drawable/ic_dots_horizontal_padding_24"
+    title="Еще" />
+</tabs>
+    </PreferenceScreen>

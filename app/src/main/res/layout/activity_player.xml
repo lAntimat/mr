@@ -1,0 +1,188 @@
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/viewA"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.3"
+            android:background="#FFFFFF"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="#222422">
+
+                <!-- activity_screen_slide.xml -->
+                <android.support.v4.view.ViewPager
+                    xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/pager"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="gone" />
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/imageView"
+                    android:layout_centerVertical="true"
+                    android:layout_centerHorizontal="true"
+                    android:clickable="false"
+                    android:scaleType="centerCrop"
+                    android:visibility="visible" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/text_scrim_height_top"
+                    android:background="@drawable/scrim_top"
+                    app:layout_collapseMode="pin"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/text_scrim_height_bottom"
+                    android:background="@drawable/scrim_bottom"
+                    android:id="@+id/view"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="Молодежное радио                    "
+                    android:id="@+id/tvTitle"
+                    android:textSize="14dp"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:paddingLeft="10dp"
+                    android:layout_above="@+id/tvNowPlay"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="СТУДПРОФ.РФ"
+                    android:id="@+id/tvNowPlay"
+                    android:clickable="true"
+                    android:enabled="true"
+                    android:maxWidth="150dp"
+                    android:textSize="14dp"
+                    android:minLines="1"
+                    android:maxLines="2"
+                    android:textColor="@color/white"
+                    android:paddingLeft="10dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true" />
+
+            </RelativeLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/viewB"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.7"
+            android:background="@color/colorPrimaryDark"
+            android:orientation="horizontal">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ProgressBar
+                    style="?android:attr/progressBarStyleSmallInverse"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:id="@+id/progressBar"
+                    android:visibility="invisible" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:id="@+id/tvDurat"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="false"
+                    android:textSize="14dp"
+                    android:layout_alignParentBottom="false"
+                    android:layout_alignParentTop="false"
+                    android:layout_marginRight="10dp"
+                    android:padding="10dp" />
+
+                <LinearLayout
+                    android:id="@+id/lrButtoms"
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_alignParentTop="false"
+                    android:layout_alignParentBottom="true"
+                    android:gravity="bottom"
+                    android:layout_margin="10dp">
+
+                    <Button
+                        style="@style/Base.Widget.AppCompat.ActionButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/btnPrev"
+                        android:layout_alignTop="@+id/tvDurat"
+                        android:layout_alignLeft="@+id/progressBar"
+                        android:layout_alignStart="@+id/progressBar"
+                        android:background="?attr/selectableItemBackground"
+                        android:padding="15dp"
+                        android:layout_marginRight="10dp" />
+
+                    <Button
+                        style="@style/Base.Widget.AppCompat.ActionButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/btnPlayPause"
+                        android:layout_alignTop="@+id/btnPrev"
+                        android:layout_toRightOf="@+id/btnPrev"
+                        android:layout_toEndOf="@+id/btnPrev"
+                        android:padding="15dp"
+                        android:background="?attr/selectableItemBackground" />
+
+                    <Button
+                        style="@style/Base.Widget.AppCompat.ActionButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/btnNext"
+                        android:layout_alignTop="@+id/btnPlayPause"
+                        android:layout_toRightOf="@+id/btnPlayPause"
+                        android:layout_toEndOf="@+id/btnPlayPause"
+                        android:padding="15dp"
+                        android:layout_marginLeft="10dp"
+                        android:background="?attr/selectableItemBackground" />
+
+                </LinearLayout>
+
+                <SeekBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/seekBar"
+                    android:indeterminate="false"
+                    android:layout_below="@+id/progressBar"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>
