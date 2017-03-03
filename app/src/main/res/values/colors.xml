@@ -17,10 +17,12 @@
         <color name="blue">#0066cc</color>
         <color name="gold">#e6b121</color>
         <color name="blueback">#99FFFF</color>
-        <color name="articlecolor">#3399FF</color>
+        <color name="articlecolor">#3399ff</color>
         <color name="article_title">#3399FF</color>
         <color name="cachecolor">#8ad0e8</color>
         <color name="grey50">#FAFAFA</color>
+        <color name="grey100">#F5F5F5</color>
+        <color name="grey200">#EEEEEE</color>
 
     <color name="description_color">#878787</color>
     <color name="divider_grey">#D4D4D4</color>
@@ -34,7 +36,7 @@
     <color name="window_background">#FFF5F5F5</color>
     <color name="window_background_dark">#212121</color>
     <color name="window_background_black">#000000</color>
-    <color name="bt_accent">#00B8D4</color>
+    <color name="bt_accent">#00b8d4</color>
 
     <color name="colorPrimaryDarkTheme">#4a4959</color>
     <color name="colorPrimaryDarkDarkTheme">#525065</color>
@@ -63,5 +65,22 @@
 
     <color name="colorPrimaryDarkDefault">#37474F</color>
     <color name="colorAccentDarkDefault">#2196F3</color>
+
+
+        <color name="tv_branding">#ffff5722</color>
+        <color name="tv_branding_dark">#ffbf360c</color>
+        <color name="tv_branding_accent">#00B8D4</color>
+        <color name="media_item_icon_playing">@color/bt_accent</color>
+        <color name="media_item_icon_not_playing">#ccc</color>
+        <color name="drawer_header_background">@color/bt_accent</color>
+        <color name="error_message_background">#ffff1600</color>
+        <color name="drawer_item_selected_background">#feee</color>
+        <color name="drawer_item_tint_color">#ff333333</color>
+        <color name="fullscreen_secondary_line_color">#E5CCCCCC</color>
+        <color name="fullscreen_line_color">#E5FFFFFF</color>
+        <color name="tv_search_button">#ff0097A7</color>
+        <color name="background_gradient_start">#000000</color>
+        <color name="background_gradient_end">#DDDDDD</color>
+        <color name="default_background">#0096a6</color>
 
 </resources>

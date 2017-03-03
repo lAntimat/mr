@@ -30,8 +30,6 @@ import android.util.Log;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
-import org.greenrobot.eventbus.EventBus;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -59,6 +57,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     public static final String ACTION_NEXT = "com.valdioveliu.valdio.audioplayer.ACTION_NEXT";
     public static final String ACTION_STOP = "com.valdioveliu.valdio.audioplayer.ACTION_STOP";
     public static final String ACTION_STOP_SELF = "com.valdioveliu.valdio.audioplayer.ACTION_STOP_SELF";
+    public static final String ACTION_SEND_PLAYBACK= "com.valdioveliu.valdio.audioplayer.ACTION_SEND_PLAYBACK";
 
     public static final String TITLE = "com.valdioveliu.valdio.audioplayer.TITLE";
     public static final String NAME = "com.valdioveliu.valdio.audioplayer.NAME";
@@ -117,8 +116,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     @Override
     public IBinder onBind(Intent intent) {
 
-
-
         return iBinder;
     }
 
@@ -163,12 +160,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
             stopSelf();
         }
 
-        //Request audio focus
-        if (requestAudioFocus() == false) {
-            //Could not gain focus
-            stopSelf();
-        }
-
         //if(!onlyBind) {
         if (mediaSessionManager == null) {
             try {
@@ -201,7 +192,13 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
             stopMedia();
             mediaPlayer.release();
         }
-        removeAudioFocus();
+
+        try {
+            removeAudioFocus();
+        }
+        catch(Exception e) {
+
+        }
         //Disable the PhoneStateListener
         if (phoneStateListener != null) {
             telephonyManager.listen(phoneStateListener, PhoneStateListener.LISTEN_NONE);
@@ -223,12 +220,31 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     public class LocalBinder extends Binder {
         public MediaPlayerService getService() {
 
+            try {
+                //Load data from SharedPreferences
+                StorageUtil storage = new StorageUtil(getApplicationContext());
+                audioList = storage.loadAudio();
+                audioIndex = storage.loadAudioIndex();
+
+                if (audioIndex != -1 && audioIndex < audioList.size()) {
+                    //index is in a valid range
+                    activeAudio = audioList.get(audioIndex);
+                } else {
+                    stopSelf();
+                }
+            } catch (NullPointerException e) {
+                stopSelf();
+            }
+
+
             initDurationSendTimer();
 
             //EventBus отправляет данные о воспроизведении.
             Log.d("MediaPlayerService", "EventBusSendAudioInfo");
             if(activeAudio!=null) {
-                EventBus.getDefault().post(new EventBusAudioInfo(activeAudio.getTitle(), activeAudio.getAlbum(), activeAudio.getImgUrl(), activeAudio.getDuration()));
+                //EventBus.getDefault().post(new EventBusAudioInfo(activeAudio.getTitle(), activeAudio.getAlbum(), activeAudio.getImgUrl(), activeAudio.getDuration()));
+
+                sendPlayback(activeAudio.getTitle(), activeAudio.getAlbum(), activeAudio.getImgUrl(), activeAudio.getDuration(), audioIndex);
             }
             if(mediaPlayer!=null) {
                 if(mediaPlayer.isPlaying()) sendPlayback(true);
@@ -299,6 +315,11 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         playMedia();
         buildNotification(PlaybackStatus.PLAYING);
         sendPlayback(true);
+        //Request audio focus
+        if (requestAudioFocus() == false) {
+            //Could not gain focus
+            stopSelf();
+        }
     }
 
     @Override
@@ -402,7 +423,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     private void playMedia() {
         if (!mediaPlayer.isPlaying()) {
             mediaPlayer.start();
-            buildNotification(PlaybackStatus.PAUSED);
+            //(PlaybackStatus.PAUSED);
             sendPlayback(true);
 
         }
@@ -435,6 +456,11 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
             buildNotification(PlaybackStatus.PLAYING);
             isStarted = true; //После возобновления
             sendPlayback(true);
+            //Request audio focus
+            if (requestAudioFocus() == false) {
+                //Could not gain focus
+                stopSelf();
+            }
         }
     }
 
@@ -632,7 +658,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
                     .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, activeAudio.getAlbum())
                     .putString(MediaMetadataCompat.METADATA_KEY_TITLE, activeAudio.getTitle())
                     .build());
-
             /*try {
                 notificationImg =  new generatePictureStyleNotification(getApplicationContext(), audioList.get(audioIndex).getImgUrl()).execute().get();
             } catch (InterruptedException e) {
@@ -642,7 +667,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
             }*/
 
 
-            EventBus.getDefault().post(new EventBusAudioInfo(activeAudio.getTitle(), activeAudio.getAlbum(), activeAudio.getImgUrl(), activeAudio.getDuration()));
+            //EventBus.getDefault().post(new EventBusAudioInfo(activeAudio.getTitle(), activeAudio.getAlbum(), activeAudio.getImgUrl(), activeAudio.getDuration()));
             sendPlayback(activeAudio.getTitle(), activeAudio.getAlbum(), activeAudio.getImgUrl(), activeAudio.getDuration(), audioIndex);
 
             if(mediaPlayer!=null) {
@@ -896,10 +921,14 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
                     break;
                 case ACTION_STOP_SELF:
                     Log.d(TAG, "ActionSTOPSELF");
-
                     stopSelf();
                     break;
-
+                case ACTION_SEND_PLAYBACK:
+                    if(mediaPlayer!=null) {
+                        if(mediaPlayer.isPlaying()) sendPlayback(true);
+                        else sendPlayback(false);
+                    } else sendPlayback(false);
+                    break;
             }
 
         }
@@ -950,6 +979,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         filter.addAction(ACTION_PREVIOUS);
         filter.addAction(ACTION_STOP);
         filter.addAction(ACTION_STOP_SELF);
+        filter.addAction(ACTION_SEND_PLAYBACK);
         registerReceiver(audioControl, filter);
     }
 
@@ -959,10 +989,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
             if(mediaPlayer.isPlaying()) broadcastIntent.putExtra("playback", true);
             else broadcastIntent.putExtra("playback",false);
         } else broadcastIntent.putExtra("playback",false);*/
-        broadcastIntent.putExtra("playback", bool);
+        if(bool!= null) broadcastIntent.putExtra("playback", bool);
         broadcastIntent.putExtra(STARTPLAYING, isStarted);
-
-
         sendBroadcast(broadcastIntent);
     }
     private void sendPlayback(String title, String name, String imgUrl, String duration, int position) {

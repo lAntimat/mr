@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -33,7 +34,7 @@ import org.jsoup.select.Elements;
 import java.util.ArrayList;
 
 import ru.lantimat.mradio_new.Adapters.RecyclerView_Adapter;
-import ru.lantimat.mradio_new.Adapters.Song;
+import ru.lantimat.mradio_new.Adapters.SongModel;
 import ru.lantimat.mradio_new.Adapters.SongsAdapter;
 import ru.lantimat.mradio_new.Audio;
 import ru.lantimat.mradio_new.CustomTouchListener;
@@ -52,7 +53,7 @@ public class PodcastSongsFragment extends Fragment {
     View view;
     ListView listView;
     SongsAdapter songsAdapter;
-    ArrayList<Song> songsArrayList = new ArrayList<>();
+    ArrayList<SongModel> songsArrayList = new ArrayList<>();
     ArrayList<Audio> audioList = new ArrayList<>();
     ImageView collapsingImageView;
     String imgUrl;
@@ -68,7 +69,7 @@ public class PodcastSongsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_podcast_songs2, container, false);
+        view = inflater.inflate(R.layout.fragment_podcast_songs, container, false);
 
         imgUrl = getArguments().getString("message");
         //imgUrl = "http://rcysl.com/wp-content/uploads/2017/01/Awesome-Beautiful-Stars-Images-.jpg";
@@ -78,9 +79,12 @@ public class PodcastSongsFragment extends Fragment {
 
         collapsingImageView = (ImageView) view.findViewById(R.id.collapsingImageView);
 
+        //listView = (ListView) view.findViewById(R.id.list_view_audio);
+
         loadCollapsingImage();
         loadAudio();
         initRecyclerView();
+        //initListView();
         //bindService();
         //loadAudioToService();
 
@@ -146,6 +150,7 @@ public class PodcastSongsFragment extends Fragment {
             adapter = new RecyclerView_Adapter(audioList, getActivity().getApplicationContext());
             recyclerView.setAdapter(adapter);
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
             recyclerView.addOnItemTouchListener(new CustomTouchListener(getContext(), new CustomTouchListener.onItemClickListener() {
                 @Override
                 public void onClick(View view, int index) {
@@ -170,6 +175,27 @@ public class PodcastSongsFragment extends Fragment {
                 }
             }));
 
+        }
+    }
+
+    private void initListView() {
+        if (audioList.size() > 0) {
+
+            songsAdapter = new SongsAdapter(getActivity().getApplicationContext(), audioList);
+            listView.setAdapter(songsAdapter);
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    StorageUtil storage = new StorageUtil(getContext());
+                    //storage.clearCachedAudioPlaylist();
+                    storage.storeAudio(audioList);
+                    storage.storeAudioIndex(position);
+                    storage.storePlayType(2);
+
+                    Intent broadcastIntent = new Intent(MainActivity.Broadcast_PLAY_NEW_AUDIO);
+                    getActivity().sendBroadcast(broadcastIntent);
+                }
+            });
         }
     }
 
@@ -256,8 +282,21 @@ public class PodcastSongsFragment extends Fragment {
     private BroadcastReceiver playBackStatus = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+
             adapter.notifyDataSetChanged();
             recyclerView.invalidate();
+            LinearLayoutManager layoutManager = ((LinearLayoutManager) recyclerView.getLayoutManager());
+            int firstVisiblePosition = layoutManager.findFirstVisibleItemPosition();
+            int lastVisiblePosition = layoutManager.findLastVisibleItemPosition();
+            //recyclerView.scrollToPosition(new StorageUtil(getContext()).loadAudioIndex());
+            //int pos = recyclerView.getChildAdapterPosition(recyclerView.getFocusedChild());
+            int nowPosition = new StorageUtil(getContext()).loadAudioIndex();
+            if(nowPosition>=firstVisiblePosition & nowPosition <= lastVisiblePosition+1) {
+                recyclerView.smoothScrollToPosition(nowPosition);
+            }
+
+            //Log.d(TAG, String.valueOf(pos));
+
 
 
         }
@@ -308,10 +347,10 @@ public class PodcastSongsFragment extends Fragment {
 
 
 
-                            Log.d(TAG, "Title " + title.text());
+                            //Log.d(TAG, "Title " + title.text());
                             //Log.d(TAG, "SubTitle " + subTitle);
-                            Log.d(TAG, "Img " + img.attr("src").substring(2).replace("www.", "https://"));
-                            Log.d(TAG, "SongUrl " + songUrl.attr("data-url").substring(2).replace("www.", "https://"));
+                            //Log.d(TAG, "Img " + img.attr("src").substring(2).replace("www.", "https://"));
+                            //Log.d(TAG, "SongUrl " + songUrl.attr("data-url").substring(2).replace("www.", "https://"));
 
                             audioList.add(new Audio(title.text(), "", songUrl.attr("data-url").substring(2).replace("www.", "https://"), img.attr("src").substring(2).replace("www.", "https://"),  "0"));
 

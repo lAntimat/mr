@@ -1,127 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (C) 2014 The Android Open Source Project
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:foreground="?android:attr/selectableItemBackground"
+    android:layout_height="@dimen/media_item_height"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    android:background="@drawable/click_bg">
 
-    <!--android:background="#00bcd4"-->
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:id="@+id/linearLayout"
-        android:background="@drawable/custom_bg"
-        android:paddingLeft="8dp"
-        android:paddingTop="4dp"
-        android:paddingBottom="4dp"
-        android:focusable="true"
-        android:clickable="true">
+        android:layout_height="match_parent">
 
         <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="0.1">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:id="@+id/ivItems"
-                android:visibility="visible"
-                android:layout_margin="5dp" />
-
-            <Button
-                style="@style/Base.Widget.AppCompat.ActionButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/btnItems"
-                android:focusable="false"
-                android:focusableInTouchMode="false"
-                android:enabled="false"
-                android:clickable="false"
-                android:visibility="gone" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0.6"
-            android:layout_marginRight="5dp"
-            android:layout_marginBottom="5dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginLeft="10dp">
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginStart="@dimen/media_item_text_margin_start"
+            android:layout_centerVertical="true"
+            android:orientation="vertical"
+            android:id="@+id/lr">
 
             <TextView
-                android:id="@+id/tvName"
-                android:layout_width="wrap_content"
+                android:id="@+id/title"
+                tools:text="The Best Music EVAH1111 FOREVER YOUNG I'M AWESOME!!!11^H^H"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
-                android:text="Молодежное Радио"
-                android:textAppearance="@android:style/TextAppearance.Medium"
-                android:textColor="@android:color/primary_text_light"
-                android:textSize="17dp"
-                android:textIsSelectable="false"
-                android:layout_gravity="left"
-                android:padding="2dp" />
+                android:ellipsize="end"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/primary_text"/>
 
             <TextView
-                android:id="@+id/tvShortDescription"
-                android:layout_width="wrap_content"
+                android:id="@+id/description"
+                tools:text="John Doe, his brothers, his sisters, his pets and his more than amazing band"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
-                android:text="Live от 20.10.2015"
-                android:textAppearance="@android:style/TextAppearance.Small"
-                android:textColor="@color/description_color"
-                android:minLines="1"
-                android:singleLine="false"
-                android:layout_gravity="left"
-                android:textSize="13dp"
-                android:padding="2dp" />
+                android:ellipsize="end"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@color/secondary_text"/>
 
         </LinearLayout>
 
-        <RelativeLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="3">
-
-            <es.claucookie.miniequalizerlibrary.EqualizerView
-                xmlns:custom="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/equalizer_view"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                custom:foregroundColor="@color/cachecolor"
-                custom:animDuration="3500"
-                android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true" />
-
-        </RelativeLayout>
-
-        <TextView
+        <ImageView
+            android:id="@+id/play_eq"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Small Text"
-            android:id="@+id/tvDurat"
-            android:textSize="15dp"
-            android:textColor="@color/background_material_dark"
-            android:maxLines="1"
-            android:layout_gravity="right"
-            android:visibility="gone" />
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/media_item_icon_margin_start"
+            android:tintMode="src_in"
+            android:tint="@color/media_item_icon_playing"
+            android:backgroundTint="@color/media_item_icon_playing"
 
-    </LinearLayout>
+            android:contentDescription="@string/play_item" />
+    </RelativeLayout>
 
-    <include layout="@layout/divider"
-        android:layout_width="match_parent"
+    <include
+        android:layout_width="wrap_content"
         android:layout_height="1dp"
-        android:background="@color/divider"
-        android:layout_alignBottom="@+id/linearLayout"
+        layout="@layout/divider"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/lr" />
+
 
 </RelativeLayout>

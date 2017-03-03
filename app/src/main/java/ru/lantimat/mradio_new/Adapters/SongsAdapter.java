@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import es.claucookie.miniequalizerlibrary.EqualizerView;
+import ru.lantimat.mradio_new.Audio;
 import ru.lantimat.mradio_new.R;
 
 
@@ -21,14 +21,14 @@ public class SongsAdapter extends BaseAdapter {
 
     Context ctx;
     LayoutInflater inflator;
-    ArrayList<Song> objects;
+    ArrayList<Audio> objects;
     String duration;
     Holder holder;
     //View rowView;
-    Song ar;
+    Audio ar;
     int nowPlayPosition = -1;
 
-    public SongsAdapter(Context context, ArrayList<Song> songsArrayLists) {
+    public SongsAdapter(Context context, ArrayList<Audio> songsArrayLists) {
         // TODO Auto-generated constructor stub
         ctx = context;
         objects = songsArrayLists;
@@ -57,14 +57,12 @@ public class SongsAdapter extends BaseAdapter {
 
 
     public class Holder {
-        TextView tvName;
-        TextView tvShortDescription;
-        TextView tvDuration;
-        EqualizerView equalizer;
+        TextView tvTitle;
+        TextView tvDescription;
     }
 
-    public Song get(int position) {
-        return ((Song) getItem(position));
+    public Audio get(int position) {
+        return ((Audio) getItem(position));
     }
 
     @Override
@@ -79,21 +77,18 @@ public class SongsAdapter extends BaseAdapter {
             myView = inflator.inflate(R.layout.item_layout, parent, false);
             holder = new Holder();
             //rowView = lInflater.inflate(R.layout.releases_item_layout, null);
-            holder.tvName = (TextView) myView.findViewById(R.id.tvName);
-            holder.tvShortDescription = (TextView) myView.findViewById(R.id.tvShortDescription);
-            holder.tvDuration = (TextView) myView.findViewById(R.id.tvDurat);
+            holder.tvTitle = (TextView) myView.findViewById(R.id.title);
+            holder.tvDescription = (TextView) myView.findViewById(R.id.description);
 
-            holder.tvName.setText(ar.title);
-            holder.tvShortDescription.setText((ar.artist));
-            Uri uri = Uri.parse(ar.url);
+            holder.tvTitle.setText(ar.getTitle());
+            holder.tvDescription.setText((ar.getAlbum()));
+            Uri uri = Uri.parse(ar.getUrl());
 
 
             if (nowPlayPosition == position & nowPlayPosition != -1) {
-                holder.equalizer.animateBars(); // Whenever you want to tart the animation
-                holder.tvShortDescription.setText("Playing");
+                holder.tvDescription.setText("Playing");
             } else {
-                holder.equalizer.stopBars();
-                holder.tvShortDescription.setText("Pause");
+                holder.tvDescription.setText("Pause");
             }
             myView.setTag(holder);
         } else {

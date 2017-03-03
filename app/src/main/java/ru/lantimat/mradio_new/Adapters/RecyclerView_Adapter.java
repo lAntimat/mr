@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.drawable.AnimationDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,11 +37,18 @@ public class RecyclerView_Adapter extends RecyclerView.Adapter<ViewHolder> {
     int nowPlayPosition = -1;
     Boolean playStatus = false;
     Boolean startPlaying = false;
+    AnimationDrawable mAnimationDrawable;
+
 
     public RecyclerView_Adapter(List<Audio> list, Context context) {
         this.list = list;
         this.context = context;
         register_playbackStatus();
+
+        //Да да, все через попу, но это для того чтобы узнать, началось воспроизведение или нет
+        Intent broadcastIntent = new Intent();
+        broadcastIntent.setAction(MediaPlayerService.ACTION_SEND_PLAYBACK);
+        context.sendBroadcast(broadcastIntent);
     }
 
     @Override
@@ -67,19 +75,29 @@ public class RecyclerView_Adapter extends RecyclerView.Adapter<ViewHolder> {
         //Log.d("RecyclerView", nowPlayPosition + " " + position);
 
 
-        if(!startPlaying) {
-            holder.equalizer.stopBars();
-        } else if (nowPlayPosition == position & playStatus & playType == 2) {
+       if (nowPlayPosition == position & playStatus & !startPlaying & playType == 2) {
             //holder.equalizer.animateBars(); // Whenever you want to tart the animation
-            holder.equalizer.setVisibility(View.VISIBLE);
+            //holder.equalizer.setVisibility(View.VISIBLE);
+            holder.play_eq.setBackgroundResource(R.drawable.ic_equalizer_white_36dp);
+
 
         } if(nowPlayPosition == position & playStatus & startPlaying & playType == 2) {
 
-            holder.equalizer.animateBars();
+            //holder.equalizer.animateBars();
+            //holder.play_eq.setImageResource(R.drawable.ic_equalizer_white_36dp);
+            holder.play_eq.setBackgroundResource(R.drawable.ic_equalizer_white_36dp);
+            mAnimationDrawable = (AnimationDrawable) holder.play_eq.getBackground();
+            mAnimationDrawable.start();
+            Log.d("RecyclerView", "AnimationDrawable  start");
+            holder.play_eq.invalidate();
+
+
 
         } else if(nowPlayPosition!= position) {
            // holder.equalizer.stopBars();
-            holder.equalizer.setVisibility(View.INVISIBLE);
+            //holder.equalizer.setVisibility(View.INVISIBLE);
+            //holder.play_eq.setImageResource(R.drawable.ic_play_black_36dp);
+            holder.play_eq.setBackgroundResource(R.drawable.ic_play_grey600_36dp);
 
         }
 
@@ -110,9 +128,13 @@ public class RecyclerView_Adapter extends RecyclerView.Adapter<ViewHolder> {
             //viewPager.setCurrentItem(intent.getIntExtra(MediaPlayerService.POSITION, 0), true);
             playStatus = intent.getBooleanExtra("playback", false);
             startPlaying = intent.getBooleanExtra(MediaPlayerService.STARTPLAYING, false);
+            /*if(mAnimationDrawable!=null) {
+                if (startPlaying) mAnimationDrawable.start();
+            }*/
 
-            Log.d("RecyclerView", "playStatus" + playStatus);
-            notifyDataSetChanged();
+            Log.d("RecyclerView", "playStatus " + playStatus);
+            Log.d("RecyclerView", "startPlaying " + startPlaying);
+            //notifyDataSetChanged();
 
         }
     };
@@ -123,16 +145,17 @@ class ViewHolder extends RecyclerView.ViewHolder {
 
     TextView title;
     TextView shortDescription;
-    ImageView play_pause;
+    ImageView play_eq;
     EqualizerView equalizer;
 
 
     ViewHolder(View itemView) {
         super(itemView);
-        title = (TextView) itemView.findViewById(R.id.tvName);
-        shortDescription = (TextView) itemView.findViewById(R.id.tvShortDescription);
-        //play_pause = (ImageView) itemView.findViewById(R.id.play_pause);
-        equalizer = (EqualizerView) itemView.findViewById(R.id.equalizer_view);
+        title = (TextView) itemView.findViewById(R.id.title);
+        shortDescription = (TextView) itemView.findViewById(R.id.description);
+        play_eq = (ImageView) itemView.findViewById(R.id.play_eq);
+        //equalizer = (EqualizerView) itemView.findViewById(R.id.equalizer_view);
+
 
     }
 

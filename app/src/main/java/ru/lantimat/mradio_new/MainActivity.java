@@ -51,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
 
     Toolbar toolbar;
 
+    final  String TAG = "MainActivity";
+
 
     //Binding this Client to the AudioPlayer Service
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -92,6 +94,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         btnPlaySetIcon(false);
+
+
 
 
         BottomBar bottomBar = (BottomBar) findViewById(R.id.bottomBar);
@@ -223,6 +227,7 @@ public class MainActivity extends AppCompatActivity {
         Intent broadcastIntent = new Intent();
         broadcastIntent.setAction(MediaPlayerService.ACTION_PLAY);
         sendBroadcast(broadcastIntent);
+
     }
     private void pause() {
         Intent broadcastIntent = new Intent();
@@ -270,6 +275,7 @@ public class MainActivity extends AppCompatActivity {
             btnPlaySetIcon(intent.getBooleanExtra("playback", false));
             tvTitle.setText(intent.getStringExtra(MediaPlayerService.TITLE));
             tvName.setText(intent.getStringExtra(MediaPlayerService.NAME));
+            Log.d(TAG, "playBackInfo");
         }
     };
 

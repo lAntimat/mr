@@ -48,6 +48,7 @@ public class RadioFragment extends Fragment {
     HashMap<String,String> url_maps = new HashMap<String, String>();
     ArrayList<Slider> arSlider = new ArrayList<>();
     TextSliderView textSliderView;
+    Context context;
     public RadioFragment() {}
     @Nullable
     @Override
@@ -57,8 +58,9 @@ public class RadioFragment extends Fragment {
 
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
 
-         sliderShow = (SliderLayout) view.findViewById(R.id.slider);
+        sliderShow = (SliderLayout) view.findViewById(R.id.slider);
 
+        context = getActivity().getApplicationContext();
 
         //set toolbar appearance
         //toolbar.setBackground(R.color.material_blue_grey_800);
@@ -201,7 +203,7 @@ public class RadioFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
 
-            StorageUtil storageUtil = new StorageUtil(getActivity().getApplicationContext());
+            StorageUtil storageUtil = new StorageUtil(context);
             int playType = storageUtil.loadPlayType();
 
             Boolean playStatus = intent.getBooleanExtra("playback", false);
