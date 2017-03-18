@@ -66,6 +66,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     public static final String POSITION = "com.valdioveliu.valdio.audioplayer.POSITION";
     public static final String PLAYBACKSTATUS = "com.valdioveliu.valdio.audioplayer.PLAYBACKSTATUS";
     public static final String STARTPLAYING = "com.valdioveliu.valdio.audioplayer.STARTPLAYING";
+    public static final String PLAYERNULL = "com.valdioveliu.valdio.audioplayer.PLAYERNULL";
 
     private MediaPlayer mediaPlayer;
 
@@ -279,7 +280,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         //stopSelf();
         skipToNext();
         updateMetaData();
-        buildNotification(PlaybackStatus.PLAYING);
+        //buildNotification(PlaybackStatus.PLAYING);
         sendPlayback(true);
 
     }
@@ -407,6 +408,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         try {
             // Set the data source to the mediaFile location
+            Log.d(TAG, "Url " + activeAudio.getUrl());
             mediaPlayer.setDataSource(activeAudio.getUrl());
         } catch (IOException e) {
             e.printStackTrace();
@@ -514,7 +516,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         public void onReceive(Context context, Intent intent) {
             //pause audio on ACTION_AUDIO_BECOMING_NOISY
             pauseMedia();
-            buildNotification(PlaybackStatus.PAUSED);
             sendPlayback(false);
 
         }
@@ -669,6 +670,10 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
 
             //EventBus.getDefault().post(new EventBusAudioInfo(activeAudio.getTitle(), activeAudio.getAlbum(), activeAudio.getImgUrl(), activeAudio.getDuration()));
             sendPlayback(activeAudio.getTitle(), activeAudio.getAlbum(), activeAudio.getImgUrl(), activeAudio.getDuration(), audioIndex);
+
+            if (activeAudio != null & mediaPlayer != null) {
+                sendDurationInfo(maxDuration, mediaPlayer.getCurrentPosition(), bufferedDuration);
+            }
 
             if(mediaPlayer!=null) {
                 if(mediaPlayer.isPlaying()) sendPlayback(true);
@@ -877,7 +882,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
             //A PLAY_NEW_AUDIO action received
             //reset mediaPlayer to play the new Audio
             stopMedia();
-            //mediaPlayer.reset();
             initMediaPlayer();
             updateMetaData();
             buildNotification(PlaybackStatus.PLAYING);
@@ -991,6 +995,10 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         } else broadcastIntent.putExtra("playback",false);*/
         if(bool!= null) broadcastIntent.putExtra("playback", bool);
         broadcastIntent.putExtra(STARTPLAYING, isStarted);
+        if(mediaPlayer==null) {
+            broadcastIntent.putExtra(PLAYERNULL, true);
+        } else broadcastIntent.putExtra(PLAYERNULL, false);
+
         sendBroadcast(broadcastIntent);
     }
     private void sendPlayback(String title, String name, String imgUrl, String duration, int position) {

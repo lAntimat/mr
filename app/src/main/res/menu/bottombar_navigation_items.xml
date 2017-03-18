@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/tab_radio"
+        android:title="Радио"
+        android:icon="@drawable/ic_access_point_padding_24" />
+    <item android:id="@+id/tab_podcast"
+        android:title="Подкасты"
+        android:icon="@drawable/ic_music_circle_black_padding_24" />
+    <item android:id="@+id/tab_more"
+        android:title="Еще"
+        android:icon="@drawable/ic_dots_horizontal_padding_24" />
+</menu>

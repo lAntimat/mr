@@ -6,20 +6,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.annotation.IdRes;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.SeekBar;
 import android.widget.TextView;
-
-import com.roughike.bottombar.BottomBar;
-import com.roughike.bottombar.OnTabSelectListener;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -48,8 +50,13 @@ public class MainActivity extends AppCompatActivity {
     TextView tvName;
     Button btnPlayMini;
     boolean audioPlaying;
+    boolean mediaplayerIsNull;
+    SeekBar seekBar;
 
     Toolbar toolbar;
+
+    String durationMax;
+    String durationNow;
 
     final  String TAG = "MainActivity";
 
@@ -94,45 +101,47 @@ public class MainActivity extends AppCompatActivity {
         });
 
         btnPlaySetIcon(false);
+        initSeekBar();
+        register_playbackDurationInfo();
 
+        Fragment fragment;
+        fragment = new RadioFragment();
 
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
 
+        BottomNavigationView bottomNavigationView = (BottomNavigationView)
+                findViewById(R.id.navigation);
 
-        BottomBar bottomBar = (BottomBar) findViewById(R.id.bottomBar);
-        if (bottomBar != null) {
-            bottomBar.setOnTabSelectListener(new OnTabSelectListener() {
-                @Override
-                public void onTabSelected(@IdRes int tabId) {
+        bottomNavigationView.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                                Fragment fragment = null;
 
-                    Fragment fragment = null;
+                                // на основании выбранного элемента меню
+                                // вызываем соответственный ему фрагмент
+                                switch (item.getItemId()) {
+                                    case R.id.tab_radio:
+                                        fragment = new RadioFragment();
+                                        break;
+                                    case R.id.tab_podcast:
+                                        fragment = new PodcastFragment();
+                                        break;
+                                    case R.id.tab_more:
+                                        fragment = new MoreFragment();
+                                        break;
 
-                    // на основании выбранного элемента меню
-                    // вызываем соответственный ему фрагмент
-                    switch (tabId) {
-                        case R.id.tab_radio:
-                            fragment = new RadioFragment();
-                            break;
-                        case R.id.tab_podcast:
-                            fragment = new PodcastFragment();
-                            break;
-                        case R.id.tab_more:
-                            fragment = new MoreFragment();
-                            break;
-
-                        default:
-                            break;
+                                    default:
+                                        break;
+                                }
+                                if (fragment != null) {
+                                    FragmentManager fragmentManager = getSupportFragmentManager();
+                                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+                                }
+                        return true;
                     }
-                    if (fragment != null) {
-                        FragmentManager fragmentManager = getSupportFragmentManager();
-                        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
-                    }
-                }
-            });
-        }
-
-
-
-
+                    });
     }
 
     @Override
@@ -224,9 +233,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void play() {
-        Intent broadcastIntent = new Intent();
-        broadcastIntent.setAction(MediaPlayerService.ACTION_PLAY);
-        sendBroadcast(broadcastIntent);
+        Intent broadcastIntent = null;
+        if(!mediaplayerIsNull) {
+            broadcastIntent = new Intent();
+            broadcastIntent.setAction(MediaPlayerService.ACTION_PLAY);
+            sendBroadcast(broadcastIntent);
+        } else {
+            broadcastIntent = new Intent();
+            broadcastIntent = new Intent(MainActivity.Broadcast_PLAY_NEW_AUDIO);
+            sendBroadcast(broadcastIntent);
+        }
 
     }
     private void pause() {
@@ -259,6 +275,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             audioPlaying = intent.getBooleanExtra("playback", false);
+            mediaplayerIsNull = intent.getBooleanExtra(MediaPlayerService.PLAYERNULL, true);
             btnPlaySetIcon(intent.getBooleanExtra("playback", false));
         }
     };
@@ -290,6 +307,99 @@ public class MainActivity extends AppCompatActivity {
         }
         return null;
     }
+
+    public void initSeekBar() {
+        seekBar = (SeekBar) findViewById(R.id.seekBar);
+        //seekBar.setVisibility(View.INVISIBLE);
+        seekBar.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.MULTIPLY));
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                /*progressGlobal = progress;
+                //seekBar.setSecondaryProgress(progress*2);
+                int a = progress / 1000 / 60;
+                int b = progress / 1000 % 60;
+                if (b < 10) {
+                    String c = a + ":0" + b;
+                    durationNow = c;
+                } else {
+                    String c = a + ":" + b;
+                    durationNow = c;
+                }
+                    tvDuration.setText(durationNow + "/" + durationMax);*/
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                /*try {
+                    iService.seek(progressGlobal * 1000);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }*/
+
+            }
+        });
+    }
+
+    public void register_playbackDurationInfo() {
+        //Register playNewMedia receiver
+        IntentFilter filter = new IntentFilter(MainActivity.Broadcast_DURATIONINFO);
+        registerReceiver(playBackDurationInfo, filter);
+    }
+
+    private BroadcastReceiver playBackDurationInfo = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Обработка данных
+            final int durMax;
+            final int durNow;
+            final int durBuff;
+            durMax = intent.getIntExtra("durMax",0);
+            durNow = intent.getIntExtra("durNow",0);
+            durBuff = intent.getIntExtra("durBuff",0);
+            //Log.d("durNow", String.valueOf(durNow));
+            //Log.d("durMax", String.valueOf(durMax));
+            try {
+                int a = durMax/1000 / 60;
+                int b = durMax/1000 % 60;
+                if (b < 10) {
+                    String c = a + ":0" + b;
+                    durationMax = c;
+                } else {
+                    String c = a + ":" + b;
+                    durationMax = c;
+                }
+
+                a = durNow/1000 / 60;
+                b = durNow/1000 % 60;
+                if (b < 10) {
+                    String c = a + ":0" + b;
+                    durationNow = c;
+                } else {
+                    String c = a + ":" + b;
+                    durationNow = c;
+                }
+            }
+            catch (NumberFormatException e) {
+                durationNow = "";
+                durationMax = "";
+            }
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    seekBar.setMax(durMax);
+                    seekBar.setProgress(durNow);
+                    //seekBar.setSecondaryProgress(durBuff);
+                }
+            });
+        }
+    };
 
     @Override
     public void onBackPressed() {

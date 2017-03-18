@@ -10,78 +10,96 @@
             android:id="@+id/content_frame"
             android:layout_width="match_parent"
         android:touchscreenBlocksFocus="false"
-        android:background="@android:color/white"
+        android:background="@color/blue"
         android:layout_height="match_parent"
-        android:layout_above="@+id/player_mini">
-        </FrameLayout>
+        android:layout_alignParentTop="true"
+        android:layout_above="@+id/seekBarLayout">
 
-    <LinearLayout
+    </FrameLayout>
+
+    <RelativeLayout
         android:orientation="horizontal"
         android:id="@+id/player_mini"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|bottom"
         android:baselineAligned="false"
-        android:layout_above="@+id/bottomBar"
         android:onClick="playerMiniClick"
-        android:background="@xml/player_mini_shadow">
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_above="@+id/navigation"
+        android:background="@drawable/player_mini_shadow"
+        android:layout_height="45dp">
 
-        <LinearLayout
-            android:orientation="vertical"
+        <Button
+            style="@style/Base.Widget.AppCompat.ActionButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.8">
+            android:id="@+id/btnPlayMini"
+            android:paddingEnd="0dp"
+            android:paddingStart="0dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_margin="-2dp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:id="@+id/tvTitle"
-                android:textSize="15dp"
-                android:textStyle="bold"
-                android:textColor="@color/primary_text"
-                android:paddingLeft="5dp"
-                android:paddingTop="3dp"
-                android:layout_marginLeft="5dp" />
+        <SeekBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/seekBar"
+            android:thumb="@color/grey50"
+            android:thumbTint="@color/transparent"
+            android:paddingEnd="0dp"
+            android:paddingStart="0dp"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/seekBarLayout"
+            android:layout_toEndOf="@+id/seekBarLayout"
+            android:progress="50"
+            android:layout_marginTop="-4dp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:id="@+id/tvName"
-                android:textSize="12dp"
-                android:textColor="@color/secondary_text"
-                android:paddingLeft="5dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginTop="2dp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:orientation="vertical"
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="right"
-            android:layout_gravity="right">
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/tvName"
+            android:textSize="12dp"
+            android:textColor="@color/secondary_text"
+            android:text="The Best"
+            android:paddingLeft="10dp"
+            android:paddingBottom="2dp"
+            android:layout_below="@+id/tvTitle"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/tvTitle"
+            android:textSize="15dp"
+            android:textStyle="bold"
+            android:textColor="@color/primary_text"
+            android:text="Best of The best"
+            android:paddingLeft="10dp"
+            android:paddingTop="4dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
 
+    </RelativeLayout>
 
-            <Button
-                style="@style/Base.Widget.AppCompat.ActionButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackground"
-                android:id="@+id/btnPlayMini" />
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <com.roughike.bottombar.BottomBar
-        android:id="@+id/bottomBar"
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/navigation"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="wrap_content"
+        app:menu="@menu/bottombar_navigation_items"
+        android:layout_gravity="end"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentBottom="true"
-        app:bb_tabXmlResource="@xml/bottombar_tabs"
-        android:measureWithLargestChild="false"
-        android:orientation="horizontal" />
+        app:elevation="9dp"
+        app:itemBackground="@color/grey50"
+        app:itemIconTint="@color/bottom_navigation_item_background_colors"
+        app:itemTextColor="@color/bottom_navigation_item_background_colors" />
+
 
 </RelativeLayout>

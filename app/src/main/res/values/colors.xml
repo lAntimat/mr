@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#283593</color>
-    <color name="colorPrimaryDark">#1A237E</color>
+    <color name="colorPrimary">#2196F3</color>
+    <color name="colorPrimaryDark">#1565C0</color>
     <color name="primary_light">#FFCDD2</color>
     <color name="colorAccent">#03A9F4</color>
     <color name="primary_text">#212121</color>
     <color name="secondary_text">#757575</color>
     <color name="icons">#ffffff</color>
     <color name="divider">#b6b6b6</color>
-        <color name="orange">#ff5500</color>
+    <color name="textAndIcons">#EDEDED</color>
+
+    <color name="orange">#ff5500</color>
         <color name="white">#ffffff</color>
         <color name="transparent">#00000000</color>
         <color name="date_color">#999999</color>
@@ -20,7 +22,7 @@
         <color name="articlecolor">#3399ff</color>
         <color name="article_title">#3399FF</color>
         <color name="cachecolor">#8ad0e8</color>
-        <color name="grey50">#FAFAFA</color>
+        <color name="grey50">#fafafa</color>
         <color name="grey100">#F5F5F5</color>
         <color name="grey200">#EEEEEE</color>
 

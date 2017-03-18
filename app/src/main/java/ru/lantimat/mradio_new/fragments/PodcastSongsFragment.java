@@ -32,16 +32,24 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import ru.lantimat.mradio_new.Adapters.RecyclerView_Adapter;
-import ru.lantimat.mradio_new.Adapters.SongModel;
+import ru.lantimat.mradio_new.Adapters.SongModel2;
 import ru.lantimat.mradio_new.Adapters.SongsAdapter;
+import ru.lantimat.mradio_new.App;
 import ru.lantimat.mradio_new.Audio;
 import ru.lantimat.mradio_new.CustomTouchListener;
 import ru.lantimat.mradio_new.MainActivity;
 import ru.lantimat.mradio_new.MediaPlayerService;
 import ru.lantimat.mradio_new.R;
 import ru.lantimat.mradio_new.StorageUtil;
+import ru.lantimat.mradio_new.models.SongItems;
+import ru.lantimat.mradio_new.models.SongModel;
+import ru.lantimat.mradio_new.models.SongsResultModel;
 
 /**
  * Created by Ильназ on 05.01.2017.
@@ -53,10 +61,11 @@ public class PodcastSongsFragment extends Fragment {
     View view;
     ListView listView;
     SongsAdapter songsAdapter;
-    ArrayList<SongModel> songsArrayList = new ArrayList<>();
+    ArrayList<SongModel2> songsArrayList = new ArrayList<>();
     ArrayList<Audio> audioList = new ArrayList<>();
     ImageView collapsingImageView;
     String imgUrl;
+    int playListId;
     String toolbarString;
 
     private MediaPlayerService player;
@@ -72,6 +81,7 @@ public class PodcastSongsFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_podcast_songs, container, false);
 
         imgUrl = getArguments().getString("message");
+        playListId = getArguments().getInt("id");
         //imgUrl = "http://rcysl.com/wp-content/uploads/2017/01/Awesome-Beautiful-Stars-Images-.jpg";
         Log.d(TAG, "URL" + imgUrl);
 
@@ -81,7 +91,7 @@ public class PodcastSongsFragment extends Fragment {
 
         //listView = (ListView) view.findViewById(R.id.list_view_audio);
 
-        loadCollapsingImage();
+        //loadCollapsingImage();
         loadAudio();
         initRecyclerView();
         //initListView();
@@ -101,7 +111,7 @@ public class PodcastSongsFragment extends Fragment {
         });*/
 
 
-        new ParseSongs().execute();
+        //new ParseSongs().execute();
 
         return view;
     }
@@ -140,7 +150,9 @@ public class PodcastSongsFragment extends Fragment {
 
     @Override
     public void onPause() {
-        getActivity().unregisterReceiver(playBackStatus);
+        if(playBackStatus!=null) {
+            getActivity().unregisterReceiver(playBackStatus);
+        }
         super.onPause();
     }
 
@@ -199,8 +211,8 @@ public class PodcastSongsFragment extends Fragment {
         }
     }
 
-    private void loadCollapsingImage() {
-        Uri uri = Uri.parse(imgUrl);
+    private void loadCollapsingImage(String url) {
+        Uri uri = Uri.parse(url);
         Picasso.with(getActivity().getApplicationContext())
                 .load(uri)
                 .into(collapsingImageView);
@@ -208,11 +220,33 @@ public class PodcastSongsFragment extends Fragment {
 
 
     public void loadAudio() {
-        audioList.add(new Audio("Молодежное радио", "SportNews", "https://psv4.vk.me/c815131/u42191302/audios/782cd6b952eb.mp3?extra=FO1TgPe213C3bxHTBH7Zb3b8V3gsqFnSkgHX3In7R0FmWMY13hcOWRDuYy6UuzYiuRGMZu5E57DgEB7aLChgP4xrb4T-LyJ45CXGfIl6PSHZsl7kYO39DuBoRUEZawfmtXL_aL5mnY4IaVw", imgUrl, "01:20"));
+        /*audioList.add(new Audio("Молодежное радио", "SportNews", "https://psv4.vk.me/c815131/u42191302/audios/782cd6b952eb.mp3?extra=FO1TgPe213C3bxHTBH7Zb3b8V3gsqFnSkgHX3In7R0FmWMY13hcOWRDuYy6UuzYiuRGMZu5E57DgEB7aLChgP4xrb4T-LyJ45CXGfIl6PSHZsl7kYO39DuBoRUEZawfmtXL_aL5mnY4IaVw", imgUrl, "01:20"));
         audioList.add(new Audio("Rockabye", "2", "https://europaplus.ru/sound/1478515228_Clean_Bandit_feat_Anne-Marie__Sean_Paul_-_Rockabye.mp3", imgUrl, "01:10"));
         audioList.add(new Audio("Human", "3", "https://europaplus.ru/sound/1480697867_RAG_N_BONE_MAN_-_Human.mp3", imgUrl, "02:30"));
         audioList.add(new Audio("Monatik", "4", "https://europaplus.ru/sound/1477670208_MONATIK_-_kruzhit.mp3", imgUrl, "03:30"));
-        audioList.add(new Audio("J-Mafia", "5", "https://europaplus.ru/sound/1467970972_Effective_Radio_-_J-Mafia.mp3", imgUrl, "02:20"));
+        audioList.add(new Audio("J-Mafia", "5", "https://europaplus.ru/sound/1467970972_Effective_Radio_-_J-Mafia.mp3", imgUrl, "02:20"));*/
+
+
+        App.getApi().getSongs(playListId).enqueue(new Callback<SongModel>() {
+            @Override
+            public void onResponse(Call<SongModel> call, Response<SongModel> response) {
+                SongModel result = response.body();
+                SongsResultModel songsResultModel = result.getResult();
+                List<SongItems> items = songsResultModel.getItems();
+                for (SongItems it: items) {
+                    audioList.add(new Audio(it.getTitle(),it.getSong(),it.getLink(), it.getImage600(), it.getLink()));
+                }
+                loadCollapsingImage(songsResultModel.getCover());
+                initRecyclerView();
+            }
+
+            @Override
+            public void onFailure(Call<SongModel> call, Throwable t) {
+                Toast.makeText(getContext(), "An error occurred during networking", Toast.LENGTH_SHORT).show();
+                t.printStackTrace();
+            }
+        });
+
 
         //songsAdapter = new SongsAdapter(getActivity().getApplicationContext(), songsArrayList);
         //recy.setAdapter(songsAdapter);

@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -37,10 +38,19 @@ import org.jsoup.nodes.Document;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import ru.lantimat.mradio_new.Adapters.GridViewAdapterPodcast;
 import ru.lantimat.mradio_new.Adapters.Podcast;
+import ru.lantimat.mradio_new.Adapters.PodcastAdapter;
+import ru.lantimat.mradio_new.App;
 import ru.lantimat.mradio_new.R;
+import ru.lantimat.mradio_new.models.PodcastModel;
+import ru.lantimat.mradio_new.models.PodcastResultModel;
+import ru.lantimat.mradio_new.models.SongModel;
 
 /**
  * Created by Ильназ on 05.01.2017.
@@ -51,13 +61,18 @@ public class PodcastFragment extends Fragment {
 
     GridView gvPodcast;
     GridViewAdapterPodcast gridViewAdapterPodcast;
+    PodcastAdapter podcastAdapter;
     ArrayList<Podcast> podcastArrayList = new ArrayList<>();
     private DatabaseReference mFirebaseDatabase;
     private FirebaseDatabase mFirebaseInstance;
 
     Document doc = null;
+    List<PodcastResultModel> podcast;
+    List<SongModel> podcasts;
 
-    public PodcastFragment() {}
+    public PodcastFragment() {
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -79,7 +94,7 @@ public class PodcastFragment extends Fragment {
                 .push().setValue(friendlyMessage);*/
 
         initListView();
-        initArrayList();
+        getPodcast();
 
         //parseAlbums();
 
@@ -92,15 +107,14 @@ public class PodcastFragment extends Fragment {
         gvPodcast.setNumColumns(2);
 
 
-
         gvPodcast.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 //imageUrl for PodcastSongFragment
                 Bundle bundle = new Bundle();
-                bundle.putString("message", podcastArrayList.get(position).urlImageBig);
-
+                //bundle.putString("message", podcastArrayList.get(position).urlImageBig);
+                bundle.putInt("id", podcast.get(position).getId());
                 FragmentManager fm = getFragmentManager();
                 FragmentTransaction ft = fm.beginTransaction();
                 PodcastSongsFragment fragment = new PodcastSongsFragment();
@@ -111,29 +125,29 @@ public class PodcastFragment extends Fragment {
 
             }
         });
+
+
     }
 
-    public void initArrayList() {
+    public void getPodcast() {
 
+        App.getApi().getPodcast().enqueue(new Callback<PodcastModel>() {
+            @Override
+            public void onResponse(Call<PodcastModel> call, Response<PodcastModel> response) {
+                PodcastModel result = response.body();
+                podcast = result.getResult();
+                gridViewAdapterPodcast = new GridViewAdapterPodcast(getActivity().getApplicationContext(), podcast);
+                gvPodcast.setAdapter(gridViewAdapterPodcast);
+            }
 
+            @Override
+            public void onFailure(Call<PodcastModel> call, Throwable t) {
+                Toast.makeText(getContext(), "An error occurred during networking", Toast.LENGTH_SHORT).show();
+                t.printStackTrace();
+            }
+        });
 
-
-        podcastArrayList.add(new Podcast("Победитель Лиги КВН НЧИ КФУ - 04.06.2016","https://pp.vk.me/c638926/v638926898/15d0e/8vLVadKo6yQ.jpg" ,"https://pp.vk.me/c638926/v638926898/15d09/TJauWGjG4wE.jpg" ));
-        podcastArrayList.add(new Podcast("Гости Молодежного радио","https://pp.vk.me/c638926/v638926898/15d0e/8vLVadKo6yQ.jpg" ,"https://pp.vk.me/c638926/v638926898/15d09/TJauWGjG4wE.jpg" ));
-        podcastArrayList.add(new Podcast("Гости Молодежного радио","https://pp.vk.me/c638926/v638926898/15d0e/8vLVadKo6yQ.jpg" ,"https://pp.vk.me/c638926/v638926898/15d09/TJauWGjG4wE.jpg" ));
-        podcastArrayList.add(new Podcast("Гости Молодежного радио","https://pp.vk.me/c638926/v638926898/15d0e/8vLVadKo6yQ.jpg" ,"https://pp.vk.me/c638926/v638926898/15d09/TJauWGjG4wE.jpg" ));
-        podcastArrayList.add(new Podcast("Гости Молодежного радио","https://pp.vk.me/c638926/v638926898/15d0e/8vLVadKo6yQ.jpg" ,"https://pp.vk.me/c638926/v638926898/15d09/TJauWGjG4wE.jpg" ));
-        podcastArrayList.add(new Podcast("Гости Молодежного радио","https://pp.vk.me/c638926/v638926898/15d0e/8vLVadKo6yQ.jpg" ,"https://pp.vk.me/c638926/v638926898/15d09/TJauWGjG4wE.jpg" ));
-        podcastArrayList.add(new Podcast("Гости Молодежного радио","https://pp.vk.me/c638926/v638926898/15d0e/8vLVadKo6yQ.jpg" ,"https://pp.vk.me/c638926/v638926898/15d09/TJauWGjG4wE.jpg" ));
-        podcastArrayList.add(new Podcast("Гости Молодежного радио","https://pp.vk.me/c638926/v638926898/15d0e/8vLVadKo6yQ.jpg" ,"https://pp.vk.me/c638926/v638926898/15d09/TJauWGjG4wE.jpg" ));
-        podcastArrayList.add(new Podcast("Гости Молодежного радио","https://pp.vk.me/c638926/v638926898/15d0e/8vLVadKo6yQ.jpg" ,"https://pp.vk.me/c638926/v638926898/15d09/TJauWGjG4wE.jpg" ));
-        podcastArrayList.add(new Podcast("Гости Молодежного радио","https://pp.vk.me/c638926/v638926898/15d0e/8vLVadKo6yQ.jpg" ,"https://pp.vk.me/c638926/v638926898/15d09/TJauWGjG4wE.jpg" ));
-        podcastArrayList.add(new Podcast("Гости Молодежного радио","https://pp.vk.me/c638926/v638926898/15d0e/8vLVadKo6yQ.jpg" ,"https://pp.vk.me/c638926/v638926898/15d09/TJauWGjG4wE.jpg" ));
-        podcastArrayList.add(new Podcast("Гости Молодежного радио","https://pp.vk.me/c638926/v638926898/15d0e/8vLVadKo6yQ.jpg" ,"https://pp.vk.me/c638926/v638926898/15d09/TJauWGjG4wE.jpg" ));
-
-        gridViewAdapterPodcast = new GridViewAdapterPodcast(getActivity().getApplicationContext(), podcastArrayList);
-        gvPodcast.setAdapter(gridViewAdapterPodcast);
-    }
+}
 
     private void fireBase() {
         mFirebaseInstance = FirebaseDatabase.getInstance();
@@ -216,7 +230,7 @@ public class PodcastFragment extends Fragment {
         @Override
         protected void onPostExecute(Void aVoid) {
 
-            initArrayList();
+            getPodcast();
 
             super.onPostExecute(aVoid);
         }

@@ -32,6 +32,7 @@ public class PlayerActivity extends AppCompatActivity {
     TextView tvTitle;
     TextView tvName;
     TextView tvDuration;
+    TextView tvDurationNow;
     ImageView albumImg;
 
     Button btnPlay;
@@ -82,6 +83,7 @@ public class PlayerActivity extends AppCompatActivity {
         tvTitle = (TextView) findViewById(R.id.tvTitle);
         tvName = (TextView) findViewById(R.id.tvNowPlay);
         tvDuration = (TextView) findViewById(R.id.tvDurat);
+        tvDurationNow = (TextView) findViewById(R.id.tvNowDurat);
 
         albumImg = (ImageView) findViewById(R.id.imageView);
 
@@ -314,9 +316,11 @@ public class PlayerActivity extends AppCompatActivity {
             tvName.setText(intent.getStringExtra(MediaPlayerService.NAME));
             //viewPager.setCurrentItem(intent.getIntExtra(MediaPlayerService.POSITION, 0), true);
             Uri uri = Uri.parse(intent.getStringExtra(MediaPlayerService.IMGURL));
-            Picasso.with(getApplicationContext())
-                    .load(uri)
-                    .into(albumImg);
+            if(uri!=null) {
+                Picasso.with(getApplicationContext())
+                        .load(uri)
+                        .into(albumImg);
+            }
         }
     };
 
@@ -369,7 +373,8 @@ public class PlayerActivity extends AppCompatActivity {
                     seekBar.setMax(durMax);
                     seekBar.setProgress(durNow);
                     seekBar.setSecondaryProgress(durBuff);
-                    tvDuration.setText(durationNow + "/" + durationMax);
+                    tvDurationNow.setText(durationNow);
+                    tvDuration.setText(durationMax);
                 }
             });
         }

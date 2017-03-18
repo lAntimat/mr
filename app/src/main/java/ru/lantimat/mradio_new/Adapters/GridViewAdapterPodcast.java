@@ -12,8 +12,10 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import ru.lantimat.mradio_new.R;
+import ru.lantimat.mradio_new.models.PodcastResultModel;
 
 
 /**
@@ -26,13 +28,16 @@ public class GridViewAdapterPodcast extends BaseAdapter {
     ArrayList<Podcast> objects;
     String duration;
     Holder holder;
+    private List<PodcastResultModel> podcast;
     //View rowView;
     Podcast ar;
+    PodcastResultModel podcas;
 
-    public GridViewAdapterPodcast(Context context, ArrayList<Podcast> ImagesArrayLists) {
+    public GridViewAdapterPodcast(Context context, List<PodcastResultModel> _podcast) {
         // TODO Auto-generated constructor stub
         ctx = context;
-        objects = ImagesArrayLists;
+        //objects = ImagesArrayLists;
+        podcast = _podcast;
         inflator = (LayoutInflater) ctx
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -41,13 +46,13 @@ public class GridViewAdapterPodcast extends BaseAdapter {
     @Override
     public int getCount() {
         // TODO Auto-generated method stub
-        return objects.size();
+        return podcast.size();
     }
 
     @Override
     public Object getItem(int position) {
         // TODO Auto-generated method stub
-        return objects.get(position);
+        return podcast.get(position);
     }
 
     @Override
@@ -59,6 +64,7 @@ public class GridViewAdapterPodcast extends BaseAdapter {
     public class Holder {
         TextView tv;
         ImageView img;
+
     }
 
     public Podcast getImagesArrayList(int position) {
@@ -69,56 +75,28 @@ public class GridViewAdapterPodcast extends BaseAdapter {
     public View getView(final int position, View convertView, ViewGroup parent) {
         // TODO Auto-generated method stub
 
-        Holder holder;
-            View myView = convertView;
+            Holder holder;
+            View myView;
+        //= convertView;
 
-            ar = getImagesArrayList(position);
+        //ar = getImagesArrayList(position);
+           podcas = podcast.get(position);
 
-        if (myView == null) {
+        //if (myView == null) {
             myView = inflator.inflate(R.layout.podcast_item_layout, parent, false);
             holder = new Holder();
             holder.tv = (TextView) myView.findViewById(R.id.textView1);
             holder.img = (ImageView) myView.findViewById(R.id.imageView1);
-            holder.tv.setText(ar.title);
-            Uri uri = Uri.parse(ar.urlImage);
-            Picasso.with(ctx) //�������� �������� ����������
-                    .load(uri)
-                    .into(holder.img);
-            myView.setTag(holder);
-        } else {
-            holder = (Holder) myView.getTag();
-    }
-//        else holder.img.setImageResource(R.drawable.mradiobig);
+            holder.tv.setText(podcas.getName());
+            Uri uri = Uri.parse(podcas.getCover());
+            Picasso.with(ctx).load(uri).into(holder.img);
+            //myView.setTag(holder);
+        //} else {
+          //  holder = (Holder) myView.getTag();
+   // }
 
 
-                /*rowView.setOnClickListener(new View.OnClickListener() {
 
-                    @Override
-                    public void onClick(View v) {
-                        // TODO Auto-generated method stub
-                        Toast.makeText(ctx, "You Clicked " + String.valueOf(position), Toast.LENGTH_LONG).show();
-                    }
-                });
-
-        /*ar = getImagesArrayList(position);
-        View myView = convertView;
-        if (convertView == null) {
-            myView = inflator.inflate(R.layout.releases_item_layout, parent, false);
-            holder = new Holder();
-            holder.tv = (TextView) myView.findViewById(R.id.textView1);
-            holder.img = (ImageView) myView.findViewById(R.id.imageView1);
-            myView.setTag(holder);
-        } else {
-            holder = (Holder) myView.getTag();
-        }
-
-        holder.tv.setText(ar.title);
-        if (!ar.urlImage.equals(ServiceManager.NULL)) {
-            Uri uri = Uri.parse(ar.urlImage);
-            Picasso.with(ctx) //�������� �������� ����������
-                    .load(uri)
-                    .into(((ImageView) myView.findViewById(R.id.imageView1)));
-        }*/
 
         return myView;
     }
